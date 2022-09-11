@@ -22,10 +22,8 @@ jobs:
           python-version: ${{ matrix.version }}
       - name: Create reports dir
         run: |
-          mkdir -p reports/mypy_reports/api
-          mkdir -p reports/mypy_reports/etl
-          mkdir -p reports/flake8_reports/api
-          mkdir -p reports/flake8_reports/etl
+          mkdir -p reports/mypy_reports
+          mkdir -p reports/flake8_reports
       - name: Install MyPy & flake8
         run: |
           pip3 install lxml==4.9.1
@@ -34,12 +32,11 @@ jobs:
           pip3 install flake8-html
       - name: Run mypy
         run: |
-          mypy api --ignore-missing-imports --html-report reports/mypy_reports/api/
-          mypy etl --ignore-missing-imports --html-report reports/mypy_reports/etl/
+          mypy . --ignore-missing-imports --html-report reports/mypy_reports
+          
       - name: Run flake8
         run: |
-          flake8 api/ --ignore=WPS,B008 --show-source
-          flake8 etl/ --ignore=WPS,B008,B902 --show-source
+          flake8 . --ignore=WPS,B008 --show-source
       
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
