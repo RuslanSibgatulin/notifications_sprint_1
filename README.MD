@@ -17,8 +17,7 @@
 ## Клонировать репозиторий
     git clone git@github.com:RuslanSibgatulin/notifications_sprint_1.git
 
-## Подготовка окружения
-### Подготовить файл с переменными окружения и сохранить под именем `docker/envs/prod`:
+## Подготовить файл с переменными окружения и сохранить под именем `docker/envs/prod`:
 
     KAFKA_HOST=broker
     KAFKA_PORT=29092
