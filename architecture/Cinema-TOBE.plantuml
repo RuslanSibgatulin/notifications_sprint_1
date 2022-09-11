@@ -1,0 +1,125 @@
+@startuml
+!theme mars
+skinparam componentStyle uml2
+skinparam actorStyle awesome
+skinparam defaultTextAlignment center
+left to right direction
+' top to bottom direction
+
+title Архитектура проекта "Онлайн кинотетр"
+
+:Клиент: as CC
+:Менеджер: as MC
+:Аналитик: as AC 
+
+usecase "Login\nLogout\nSignup" as auth
+usecase "Просмотр\nконтента" as content
+usecase "Переход \nпо короткой ссылке" as short_link
+usecase "Добавление контента \nСобытие" as new_content
+usecase "Регистрации пользователя\nСобытие" as new_user
+
+CC --> auth
+CC --> content
+CC --> short_link
+
+
+package Auth {
+cloud {
+[OAuth2 Services] as oauth2
+}
+[AuthAPI\nFlask] as AuthAPI
+database "AuthCache\nRedis" as AuthCache
+database "AuthDB\nPostgres" as AuthDB
+AuthAPI <--> AuthCache
+AuthAPI <--> AuthDB
+
+oauth2 <--> AuthAPI: Cведения о клиенте
+auth --> AuthAPI
+}
+
+package Movies {
+[MoviesAPI\nFastAPI] as MoviesAPI
+database "Movies Storage\nElastic" as ES
+database "API Cache\nRedis" as redis
+MoviesAPI <--> ES
+MoviesAPI <--> redis
+}
+content --> MoviesAPI
+MoviesAPI --> AuthAPI
+
+package Admin {
+component "Admin panel\nDjango" as Django
+database "MoviesDB\nPostgres" as MoviesDB
+Django <--> MoviesDB
+[ETL Movies] as ETL1
+ETL1 --> ES
+ETL1 <-- MoviesDB
+MC --> Django
+}
+
+
+package UGC {
+[API UGC] as UGCAPI
+database "Шина данных\nOLTP Kafka" as OLTP
+database "UGC Storage\nMongoDB" as Mongo
+usecase "Лайк\nСобытие" as like
+UGCAPI --> OLTP
+UGCAPI <--> Mongo
+[ETL UGC] as ETLUGC
+ETLUGC <-- OLTP
+' note left of ETL_UGC : Перегрузка данных\nиз транзакционного хранилища\nв аналитическое
+database "OLAP\nClickhouse" as OLAP
+ETLUGC -left-> OLAP
+}
+content --> UGCAPI
+AC --> OLAP
+
+UGCAPI --> like
+
+Django --> new_content
+new_content --> OLTP
+like --> OLTP
+
+
+
+package Notifications {
+cloud {
+[Notification Services:\nE-mail, SMS, etc] as NotifService
+}
+[API Notifer] as APINotif
+[Admin Notifer] as AdminNotif
+[Consumer\nEvents reader] as ConsumerNotif
+ConsumerNotif <-- OLTP
+short_link --> APINotif
+AuthAPI --> new_user
+new_user --> OLTP
+
+database "Notifications Storage\nPostgres | MongoDB\n" as NotifDB
+AdminNotif <-> NotifDB
+
+queue "Notifications Queue \nRabbitMQ" as NotifQueue
+APINotif --> NotifQueue
+
+[Notificaton sender \n(Worker 1..n)] as NotifSender1
+
+NotifQueue --> NotifSender1
+
+NotifDB --> NotifSender1
+
+ConsumerNotif --> NotifQueue
+
+
+NotifSender1 --> NotifService
+database "Workers Storage \nRedis" as WorkerState
+database "Short links \nRedis\n" as NotifRedis
+APINotif <--> NotifRedis
+
+NotifSender1 <-> WorkerState: Состояние задач
+
+[Scheduler] as Scheduler
+Scheduler <-- NotifDB
+Scheduler --> NotifQueue
+MC --> AdminNotif
+}
+
+@enduml
