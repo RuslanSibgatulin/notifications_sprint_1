@@ -2,6 +2,7 @@ version: '3'
 
 volumes:
   static:
+  postgres_data:
 
 services:
   postgres:
@@ -9,7 +10,7 @@ services:
     image: postgres:14.1-alpine
     env_file: envs/NoticeAdmin.env
     volumes:
-      - /tmp/notice-data/:/var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/data/
     ports:
       - 5432:5432
 

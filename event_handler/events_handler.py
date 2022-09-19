@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)  # TODO: logging config
 
 
-class EventsHandler():
+class EventsHandler:
     def __init__(
         self,
         kafka_url: str,
@@ -63,7 +63,8 @@ class EventsHandler():
             self.config[topic]["templates"] = templates  # Save to cache
         return templates
 
-    def load_templates(self, topic: str) -> List[Dict]:
+    @staticmethod
+    def load_templates(topic: str) -> List[Dict]:
         logger.debug("Loading templates for trigger %s", topic)
         storage = PostgresNotice(pg_settings.uri)
         templ = storage.get_templates_by_trigger(topic)

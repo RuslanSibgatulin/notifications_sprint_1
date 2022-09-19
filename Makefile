@@ -1,7 +1,7 @@
 ## ----------------------------------------------------------------------
 ## Makefile is to manage Notifications project.
 ## ----------------------------------------------------------------------
-compose_files=-f admin-docker-compose.yml -f kafka-docker-compose.yml -f rabbit-docker-compose.yml
+compose_files=-f admin-docker-compose.yml -f kafka-arm64-docker-compose.yml -f rabbit-docker-compose.yml
 
 help:     ## Show this help.
 		@sed -ne '/@sed/!s/## //p' $(MAKEFILE_LIST)
@@ -12,7 +12,8 @@ stop:  ## Stop infrastructure.
 		cd docker && docker-compose $(compose_files) down
 
 init:  ## First and full initialization. Create database, superuser and collect static files
-	docker exec -it notice_django bash -c 'python manage.py migrate && python manage.py createsuperuser && python manage.py collectstatic'
+	docker exec -it notice_django bash -c \
+	'python manage.py migrate && python manage.py createsuperuser --noinput && python manage.py collectstatic --noinput'
 
 migrate:  ## Apply migrations only
 		docker exec -it notice_django bash -c 'python manage.py migrate'

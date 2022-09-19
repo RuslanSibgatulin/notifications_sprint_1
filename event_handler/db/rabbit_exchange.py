@@ -8,7 +8,7 @@ from aio_pika.pool import Pool
 logger = logging.getLogger(__name__)
 
 
-class RabbitExchange():
+class RabbitExchange:
     def __init__(self, url: str, exchange: str) -> None:
         self.url = url
         self.exchange_name = exchange
