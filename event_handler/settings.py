@@ -48,6 +48,21 @@ class RabbitSettings(BaseSettings):
         )
 
 
+class RedisSettings(BaseSettings):
+    REDIS_HOST: str = "127.0.0.1"
+    REDIS_PORT: int = 6379
+    REDIS_DB_INDEX: int = 0
+
+    @property
+    def uri(self) -> str:
+        return "redis://{0}:{1}/{2}".format(
+            self.REDIS_HOST,
+            self.REDIS_PORT,
+            self.REDIS_DB_INDEX
+        )
+
+
+redis_settings = RedisSettings()
 rabbit_settings = RabbitSettings()
 pg_settings = PostgreSettings()
 kafka_settings = KafkaSettings()

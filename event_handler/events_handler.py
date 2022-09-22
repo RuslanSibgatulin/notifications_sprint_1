@@ -4,10 +4,11 @@ import logging.config
 from typing import Dict, List, NamedTuple, Optional
 
 import orjson
-from aiokafka import AIOKafkaConsumer
+from aiokafka import AIOKafkaConsumer, TopicPartition
 
 from db.pg_notice import PostgresNotice
 from db.rabbit_exchange import RabbitExchange
+from db.redis import RedisCache
 from models.models import NoticeTemplate
 from settings import pg_settings
 
@@ -23,35 +24,45 @@ class EventsHandler:
         self,
         kafka_url: str,
         rabbit: RabbitExchange,
+        redis: RedisCache,
         config: dict
     ) -> None:
         self.server = kafka_url
         self.rabbit = rabbit
+        self.redis = redis
         self.config = config
         self.version = "v1"
 
     async def consume(self, topic: str) -> None:
+        REDIS_HASH_KEY = f"consumer:{topic}:offset"
+        tp = TopicPartition(topic, 0)
         consumer = AIOKafkaConsumer(
-            topic,
             auto_offset_reset='earliest',
             bootstrap_servers=self.server,
+            enable_auto_commit=False,
             retry_backoff_ms=500,
             max_poll_interval_ms=60000,
             metadata_max_age_ms=60000,
             value_deserializer=lambda v: orjson.loads(v.decode("utf-8")),)
 
-        # TODO: set consumer offset
         await consumer.start()
+        consumer.assign([tp])
         try:
+            offset = await self.redis.get(REDIS_HASH_KEY)
+            if offset:
+                consumer.topics
+                consumer.seek(tp, offset=offset + 1)
             # Consume messages
             async for msg in consumer:
                 context = self.transform(msg)
+
                 if context:
                     for tmpl in self.get_templates(topic):
                         logger.info("Notice %s, template %s", context, tmpl)
                         await self.rabbit_publish(self.rabbit, context, tmpl)
-                # TODO: save consumer offset
+                await self.redis.set(REDIS_HASH_KEY, msg.offset)
         finally:
+            await self.redis.close()
             await consumer.stop()
 
     def get_templates(self, topic: str) -> List[NoticeTemplate]:
