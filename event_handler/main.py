@@ -1,8 +1,8 @@
 import logging
 
 from core.config import events_config
-from core.settings import kafka_settings, redis_settings
 from core.logger import LOGGING
+from core.settings import kafka_settings, redis_settings
 from db.redis import RedisCache
 from handlers.events_handler import EventsHandler
 
