@@ -25,13 +25,13 @@ class EventsHandler:
 
     async def consume(self, topic: str) -> None:
         self.consumer = AIOKafkaConsumer(
-            auto_offset_reset='earliest',
+            auto_offset_reset="earliest",
             bootstrap_servers=self.kafka_url,
             enable_auto_commit=False,
             retry_backoff_ms=500,
             max_poll_interval_ms=60000,
             metadata_max_age_ms=60000,
-            value_deserializer=lambda v: orjson.loads(v.decode("utf-8")),)
+            value_deserializer=lambda v: orjson.loads(v.decode("utf-8")))
         tp = TopicPartition(topic, 0)
         await self.consumer.start()
         self.consumer.assign([tp])
@@ -43,7 +43,6 @@ class EventsHandler:
                 if not context:
                     continue
                 handlers = self.config.get(topic, {}).get("handlers", [])
-                # logger.debug("Event <%s> handlers %s", topic, handlers)
                 for handler in handlers:  # Exec all assigned handlers
                     await handler(topic)(context)
                 await self.save_offset(topic, msg)

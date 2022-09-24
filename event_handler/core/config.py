@@ -4,7 +4,7 @@ from models.models import NewUserEvent, ViewEvent
 events_config = {
     "registred": {
         "model": NewUserEvent,
-        "handlers": [TemplateQueueHandler, AutoSubscribeUserHandler, ]
+        "handlers": [TemplateQueueHandler, AutoSubscribeUserHandler]
 
     },
     "views": {

@@ -11,8 +11,8 @@ class RedisCache:
 
     @staticmethod
     def format_key(key_title, **kwargs) -> str:
-        params = ['{0}::{1}'.format(k, v) for k, v in kwargs.items()]
-        return '::'.join([key_title, *params])
+        params = ["{0}::{1}".format(k, v) for k, v in kwargs.items()]
+        return "::".join([key_title, *params])
 
     async def get(self, key: str) -> Any:
         value = await self.source.get(key)
