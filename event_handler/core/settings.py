@@ -25,7 +25,7 @@ class PostgreSettings(BaseSettings):
             self.POSTGRES_PASSWORD,
             self.POSTGRES_HOST,
             self.POSTGRES_PORT,
-            self.POSTGRES_DB
+            self.POSTGRES_DB,
         )
 
 

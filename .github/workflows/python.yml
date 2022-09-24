@@ -36,7 +36,7 @@ jobs:
           
       - name: Run flake8
         run: |
-          flake8 event_handler/ --ignore=WPS,B008 --show-source
+          flake8 event_handler/ --ignore=WPS,B008,B902,C812 --show-source
       
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0

@@ -17,7 +17,7 @@ class PostgresInterface:
         if cls.conn:
             cls.conn.close()
 
-    @backoff('Postgres.connect')
+    @backoff("Postgres.connect")
     async def connect(cls):
         if not cls.conn or cls.conn.closed():
             cls.conn = await aiopg.connect(cls.dsn)
@@ -29,7 +29,7 @@ class PostgresInterface:
             ) as cur:
                 offset = 0
                 while True:
-                    limited_query = '{0} LIMIT {1} OFFSET {2}'.format(
+                    limited_query = "{0} LIMIT {1} OFFSET {2}".format(
                         query, cls.limit, offset)
                     await cur.execute(limited_query)
 

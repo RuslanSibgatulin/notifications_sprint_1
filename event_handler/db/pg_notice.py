@@ -15,7 +15,7 @@ class PostgresInterface:
     conn: pg_connect = None
     limit: int = 1000
 
-    @backoff('Postgres.connect')
+    @backoff("Postgres.connect")
     def connect(cls) -> bool:
         if not cls.conn or cls.conn.status != STATUS_READY:
             cls.conn = psycopg2.connect(cls.dsn, async_=True)
@@ -27,7 +27,7 @@ class PostgresInterface:
             with cls.conn.cursor(cursor_factory=RealDictCursor) as cur:
                 offset = 0
                 while True:
-                    limited_query = '{0} LIMIT {1} OFFSET {2}'.format(
+                    limited_query = "{0} LIMIT {1} OFFSET {2}".format(
                         query, cls.limit, offset)
                     cur.execute(limited_query)
 
