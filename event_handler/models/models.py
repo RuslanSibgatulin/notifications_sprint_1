@@ -1,4 +1,5 @@
 from uuid import UUID
+
 from pydantic import BaseModel, root_validator
 
 
@@ -11,7 +12,7 @@ class ViewEvent(BaseModel):
     event_time: int
 
     @root_validator(pre=True)
-    def fill_percent(self, values):
+    def fill_percent(cls, values):
         if "percent" not in values:
             pos, total = values.get("time", 0), values.get("total_time", 0)
             values["percent"] = pos / total * 100
