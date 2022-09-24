@@ -90,7 +90,7 @@ class TemplateQueueHandler(TemplatesMixin):
             template.notice_trigger
         )
 
-    async def __call__(self, context: dict[str, Any]) -> None:
+    async def __call__(self, context: Dict[str, Any]) -> None:
         logger.debug("%s queued for %s event", context, self.event)
         for tmpl in await self.get_templates(self.event):
             await self.rabbit_publish(self.rabbit, context, tmpl)
@@ -101,7 +101,7 @@ class AutoSubscribeUserHandler(PostgresMixin):
         super().__init__()
         self.event = event
 
-    async def __call__(self, context: dict[str, Any]) -> None:
+    async def __call__(self, context: Dict[str, Any]) -> None:
         logger.info(
             "Auto subscribe user %s on event <%s>",
             context["user_id"],
