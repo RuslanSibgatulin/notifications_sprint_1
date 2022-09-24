@@ -62,6 +62,12 @@ class RedisSettings(BaseSettings):
         )
 
 
+class LogstashSettings(BaseSettings):
+    LOGSTASH_HOST: str = "localhost"
+    LOGSTASH_PORT: int = 5044
+
+
+logstash_settings = LogstashSettings()
 redis_settings = RedisSettings()
 rabbit_settings = RabbitSettings()
 pg_settings = PostgreSettings()

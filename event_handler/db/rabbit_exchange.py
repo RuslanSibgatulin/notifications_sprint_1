@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from typing import Any
 
 import orjson
 from aio_pika import Channel, DeliveryMode, Message, connect_robust
@@ -12,7 +13,7 @@ class RabbitExchange:
     def __init__(self, url: str, exchange: str) -> None:
         self.url = url
         self.exchange_name = exchange
-        self.channel_pool = None
+        self.channel_pool: Pool[Any] = None
 
     async def get_channel_pool(self):
         loop = asyncio.get_event_loop()

@@ -1,17 +1,19 @@
 import logging
 
-from config import events_config
-from db.rabbit_exchange import RabbitExchange
+from core.config import events_config
+from core.settings import kafka_settings, redis_settings
+from core.logger import LOGGING
 from db.redis import RedisCache
-from events_handler import EventsHandler
-from settings import kafka_settings, rabbit_settings, redis_settings
+from handlers.events_handler import EventsHandler
+
+logging.config.dictConfig(LOGGING)
+logger = logging.getLogger("Events Handler")
+
 
 if __name__ == "__main__":
-    logger = logging.getLogger("Event Handler")
     logger.info("Started")
     redis = RedisCache(redis_settings.uri)
-    rabbit = RabbitExchange(rabbit_settings.uri, exchange="Notice")
-    events = EventsHandler(kafka_settings.uri, rabbit, redis, events_config)
+    events = EventsHandler(kafka_settings.uri, redis, events_config)
     try:
         events.run()
     except KeyboardInterrupt:
