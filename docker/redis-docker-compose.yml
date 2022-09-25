@@ -4,6 +4,5 @@ services:
     image: redis:7.0.0-alpine
     healthcheck:
       test: redis-cli ping
-
     ports:
       - 6379:6379

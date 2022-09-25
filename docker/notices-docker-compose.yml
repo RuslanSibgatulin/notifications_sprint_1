@@ -1,0 +1,17 @@
+version: "3"
+services:
+  eventshandler:
+    container_name: events_handler
+    build:
+      context: ..
+      dockerfile: docker/dockerfiles/EventsHandlerDockerfile
+    env_file: envs/EventsHandler.env
+    depends_on:
+      broker:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      rabbit:
+        condition: service_healthy
