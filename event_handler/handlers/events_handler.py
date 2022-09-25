@@ -21,10 +21,10 @@ class EventsHandler:
         self.redis = redis
         self.kafka_url = kafka_url
         self.config = events_registry
-        self.consumer: AIOKafkaConsumer = None
 
     async def consume(self, topic: str) -> None:
-        self.consumer = AIOKafkaConsumer(
+        logger.info("Consume topic %s", topic)
+        consumer = AIOKafkaConsumer(
             auto_offset_reset="earliest",
             bootstrap_servers=self.kafka_url,
             enable_auto_commit=False,
@@ -33,12 +33,12 @@ class EventsHandler:
             metadata_max_age_ms=60000,
             value_deserializer=lambda v: orjson.loads(v.decode("utf-8")))
         tp = TopicPartition(topic, 0)
-        await self.consumer.start()
-        self.consumer.assign([tp])
+        await consumer.start()
+        consumer.assign([tp])
         try:
-            await self.seek(topic, tp)
-            # Consume messages
-            async for msg in self.consumer:
+            await self.seek(consumer, topic, tp)
+            # Consume topic messages
+            async for msg in consumer:
                 context = self.transform(msg)
                 if not context:
                     continue
@@ -48,17 +48,17 @@ class EventsHandler:
                 await self.save_offset(topic, msg)
         finally:
             await self.redis.close()
-            await self.consumer.stop()
+            await consumer.stop()
 
     async def save_offset(self, topic, msg):
         REDIS_HASH_KEY = f"consumer:{topic}:offset"
         return await self.redis.set(REDIS_HASH_KEY, msg.offset)
 
-    async def seek(self, topic, tp):
+    async def seek(self, consumer, topic, tp):
         REDIS_HASH_KEY = f"consumer:{topic}:offset"
         offset = await self.redis.get(REDIS_HASH_KEY)
         if offset:
-            self.consumer.seek(tp, offset=offset + 1)
+            consumer.seek(tp, offset=offset + 1)
 
     def transform(self, event: ConsumerRecord) -> Optional[Dict]:
         obj = event.value | {"event_time": event.timestamp // 1000}
@@ -69,8 +69,14 @@ class EventsHandler:
             logger.info("No model for topic %s", event.topic)
             return None
 
-    def run(self):
-        for topic in self.config:
-            asyncio.run(
-                self.consume(topic)
-            )
+    def start(self):
+        loop = asyncio.get_event_loop()
+        tasks = (self.consume(topic) for topic in self.config)
+        future = asyncio.gather(*tasks, return_exceptions=True)
+        loop.run_until_complete(future)
+
+        # tasks = [self.consume(topic) for topic in self.config]
+        # asyncio.gather(
+        #     *coro
+        # )
+        # for topic in self.config:

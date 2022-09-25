@@ -1,9 +1,8 @@
 import logging
-from typing import Any, Dict, List
+from typing import Dict, List
 
-from core.settings import pg_settings, rabbit_settings, redis_settings
+from core.settings import pg_settings, redis_settings
 from db.aiopg_notice import PostgresInterface
-from db.rabbit_exchange import RabbitExchange
 from db.redis import RedisCache
 from models.models import NoticeTemplate
 
@@ -40,6 +39,15 @@ class PostgresMixin:
         """.format(user_id)
         await self.storage.set_data(query)
 
+    async def set_user_views(self, user_id: str, movie_id: str):
+        query = """
+            INSERT INTO notice_user_views
+            (user_id, movie_id, created)
+            VALUES ({0}, {1}, Now())
+            ON CONFLICT DO NOTHING
+        """.format(user_id, movie_id)
+        await self.storage.set_data(query)
+
 
 class TemplatesMixin(PostgresMixin):
     def __init__(self):
@@ -61,50 +69,3 @@ class TemplatesMixin(PostgresMixin):
         return [
             NoticeTemplate.parse_obj(i) for i in templates
         ]
-
-
-class TemplateQueueHandler(TemplatesMixin):
-    def __init__(self, event: str) -> None:
-        super().__init__()
-        self.event = event
-        self.rabbit = RabbitExchange(rabbit_settings.uri, exchange="Notice")
-        self.version = "v1"
-
-    async def rabbit_publish(
-        self,
-        rabbit: RabbitExchange,
-        context: dict,
-        template: NoticeTemplate
-    ):
-        routing_key = self.get_routing_key(template)
-        queue_name = f"{template.notice_method}.send"
-        msg = {
-            "context": context,
-            "template": template.content}
-        await rabbit.publish(routing_key, queue_name, msg)
-
-    def get_routing_key(self, template: NoticeTemplate):
-        return "{0}.{1}.{2}".format(
-            "user-reporting",
-            self.version,
-            template.notice_trigger
-        )
-
-    async def __call__(self, context: Dict[str, Any]) -> None:
-        logger.debug("%s queued for %s event", context, self.event)
-        for tmpl in await self.get_templates(self.event):
-            await self.rabbit_publish(self.rabbit, context, tmpl)
-
-
-class AutoSubscribeUserHandler(PostgresMixin):
-    def __init__(self, event: str):
-        super().__init__()
-        self.event = event
-
-    async def __call__(self, context: Dict[str, Any]) -> None:
-        logger.info(
-            "Auto subscribe user %s on event <%s>",
-            context["user_id"],
-            self.event
-        )
-        await self.set_user_subscriptions(context["user_id"])
