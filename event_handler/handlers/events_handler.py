@@ -74,9 +74,3 @@ class EventsHandler:
         tasks = (self.consume(topic) for topic in self.config)
         future = asyncio.gather(*tasks, return_exceptions=True)
         loop.run_until_complete(future)
-
-        # tasks = [self.consume(topic) for topic in self.config]
-        # asyncio.gather(
-        #     *coro
-        # )
-        # for topic in self.config:
