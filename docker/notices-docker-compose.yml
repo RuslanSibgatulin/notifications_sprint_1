@@ -1,7 +1,7 @@
 version: "3"
 services:
   eventshandler:
-    container_name: events_handler
+    container_name: events-handler
     build:
       context: ..
       dockerfile: docker/dockerfiles/EventsHandlerDockerfile

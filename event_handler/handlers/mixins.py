@@ -56,7 +56,7 @@ class TemplatesMixin(PostgresMixin):
 
     async def load(self, key: str) -> List[dict]:
         templates = await self.get_templates_by_trigger(key)
-        logger.debug("<%s> templates loaded %s", key, templates)
+        logger.debug("Templates by key <%s> loaded %s", key, templates)
         return templates
 
     async def get_templates(self, key: str) -> List[NoticeTemplate]:
