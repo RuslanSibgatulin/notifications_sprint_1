@@ -50,11 +50,12 @@ class PostgresInterface:
                         break
 
     async def get_data(cls, query: str) -> List[Dict]:
+        data = []
         if await cls.connect():
             async with cls.conn.cursor(cursor_factory=RealDictCursor) as cur:
                 await cur.execute(query)
                 data = await cur.fetchall()
-            return list(map(dict, data))
+        return list(map(dict, data))
 
     async def set_data(cls, query: str) -> bool:
         res = False
