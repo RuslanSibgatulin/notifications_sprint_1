@@ -1,7 +1,8 @@
 ## ----------------------------------------------------------------------
 ## Makefile is to manage Notifications project.
 ## ----------------------------------------------------------------------
-compose_files=-f admin-docker-compose.yml -f kafka-docker-compose.yml -f rabbit-docker-compose.yml -f redis-docker-compose.yml
+compose_files=-f admin-docker-compose.yml -f kafka-docker-compose.yml -f rabbit-docker-compose.yml\
+ -f redis-docker-compose.yml -f notices-docker-compose.yml -f elk-docker-compose.yml
 
 help:     ## Show this help.
 		@sed -ne '/@sed/!s/## //p' $(MAKEFILE_LIST)

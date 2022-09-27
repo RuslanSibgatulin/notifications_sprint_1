@@ -1,10 +1,14 @@
+import logging
 from dataclasses import dataclass
 from typing import AsyncGenerator, Dict, List
 
 import aiopg
+from psycopg2.errors import CannotConnectNow
 from psycopg2.extras import RealDictCursor
 
 from .backoff import backoff
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -17,10 +21,15 @@ class PostgresInterface:
         if cls.conn:
             cls.conn.close()
 
-    @backoff("Postgres.connect")
+    @backoff("Postgres.connect", logger)
     async def connect(cls):
-        if not cls.conn or cls.conn.closed():
+        if not cls.conn or cls.conn.closed:
             cls.conn = await aiopg.connect(cls.dsn)
+            if cls.conn.closed:
+                raise CannotConnectNow(
+                    "Cannot connect to postgres"
+                )
+        return True
 
     async def get_limited_data(cls, query: str) -> AsyncGenerator:
         if await cls.connect():

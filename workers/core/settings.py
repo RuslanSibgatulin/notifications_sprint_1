@@ -1,7 +1,8 @@
-from pydantic import BaseSettings
+from pydantic import BaseSettings, Field
 
 
 class KafkaSettings(BaseSettings):
+    KAFKA_TOPIC: str = Field("views", env="MOVIE_PROGRESS_TOPIC")
     KAFKA_HOST: str = "localhost"
     KAFKA_PORT: int = 9092
 

@@ -15,7 +15,7 @@ LOGGING = {
         },
         "logstash": {
             "()": "logstash_async.formatter.LogstashFormatter",
-            "message_type": "python-logstash",
+            "message_type": "events-handler",
             "fqdn": False,
             "extra_prefix": "dev",
             "extra": {
