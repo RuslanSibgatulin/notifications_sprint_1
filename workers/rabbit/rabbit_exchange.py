@@ -59,13 +59,12 @@ class RabbitExchange:
             await self.get_channel_pool()
 
         async with self.channel_pool.acquire() as channel:
-            while True:
-                await channel.set_qos(10)
-
-                queue = await channel.declare_queue(
-                    queue_name,
-                    durable=True,
-                    auto_delete=False
-                )
-                async with queue.iterator() as queue_iter:
-                    yield queue_iter
+            await channel.set_qos(10)
+            queue = await channel.declare_queue(
+                queue_name,
+                durable=True,
+                auto_delete=False
+            )
+            async with queue.iterator() as queue_iter:
+                async for message in queue_iter:
+                    yield message

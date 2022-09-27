@@ -17,13 +17,13 @@ class NoticeWorker:
         self.rabbit = RabbitExchange(rabbit_settings.uri, exchange="Notice")
 
     async def consume(self, queue_name: str):
-        queue_iter = self.rabbit.consume(queue_name)
-        async for message in queue_iter:
-            msg = orjson.loads(message.body)
-            logger.info("Received %s", msg)
-            await message.ack()
+        try:
+            async for msg in self.rabbit.consume(queue_name):
+                print(msg.body)
+        except KeyboardInterrupt:
+            logger.info("Stoped")
 
 
 if __name__ == "__main__":
     worker = NoticeWorker()
-    asyncio.run(worker.consume("emal.send"))
+    asyncio.run(worker.consume("email.send"))
