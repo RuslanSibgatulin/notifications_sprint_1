@@ -3,8 +3,8 @@ from dataclasses import dataclass
 from typing import AsyncGenerator, Dict, List
 
 import aiopg
-from psycopg2.extras import RealDictCursor
 from psycopg2.errors import CannotConnectNow
+from psycopg2.extras import RealDictCursor
 
 from .backoff import backoff
 
