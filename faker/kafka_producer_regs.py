@@ -19,7 +19,7 @@ def main():
             )
             print(v)
 
-            sleep(random.randrange(20, 30))
+            sleep(random.randrange(120, 300))
     except KeyboardInterrupt as e:
         print(e)
 

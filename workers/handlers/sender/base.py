@@ -7,7 +7,7 @@ class EmailSenderInterface(ABC):
         pass
 
     @abstractmethod
-    def send_email(
+    def send(
             self,
             send_from: str,
             send_to: str,
