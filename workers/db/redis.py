@@ -21,10 +21,11 @@ class RedisCache:
         else:
             return orjson.loads(value)
 
-    async def set(self, key: str, value: Any) -> None:
+    async def set(self, key: str, value: Any, expire_sec: int = None) -> None:
         await self.source.set(
             key,
-            orjson.dumps(value)
+            orjson.dumps(value),
+            ex=expire_sec
         )
 
     async def close(self) -> None:

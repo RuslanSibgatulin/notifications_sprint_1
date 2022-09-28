@@ -1,4 +1,4 @@
-from .settings import logstash_settings
+from core.settings import logstash_settings
 
 LOG_DEFAULT_HANDLERS = [
     "console",

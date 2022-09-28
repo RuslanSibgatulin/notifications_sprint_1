@@ -5,9 +5,8 @@ from typing import Any, Dict
 from uuid import UUID
 
 from core.settings import smtp_settings
-from pydantic import BaseModel
-
 from handlers.render import EmailRender
+from pydantic import BaseModel
 
 from .sender.smtp_sender import EmailSMTPSender
 

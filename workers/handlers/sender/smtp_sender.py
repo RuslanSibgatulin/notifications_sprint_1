@@ -38,7 +38,7 @@ class EmailSMTPSender(EmailSenderInterface):
                 logger.debug("Login response - %s", res)
         return self.server.is_connected
 
-    async def disconnect(self) -> None:
+    async def disconnect(self):
         await self.server.quit()
 
     async def send(
@@ -59,14 +59,13 @@ class EmailSMTPSender(EmailSenderInterface):
         message.attach(html_message)
         res = ""
         if await self.connect():
-            logger.info("Ready to send email %s", send_to)
-            res = await self.server.sendmail(
+            resp = await self.server.sendmail(
                 self.user,
                 [send_to],
                 message.as_string()
             )
-            res = res[1]
-            logger.info("Sending result - %s", res)
+            res = resp[1]
+            logger.debug("Sending result - %s", res)
             await self.disconnect()
 
         return True if res == "OK" else False
