@@ -1,14 +1,4 @@
-from pydantic import BaseSettings, Field
-
-
-class KafkaSettings(BaseSettings):
-    KAFKA_TOPIC: str = Field("views", env="MOVIE_PROGRESS_TOPIC")
-    KAFKA_HOST: str = "localhost"
-    KAFKA_PORT: int = 9092
-
-    @property
-    def uri(self) -> str:
-        return f"{self.KAFKA_HOST}:{self.KAFKA_PORT}"
+from pydantic import BaseSettings
 
 
 class PostgreSettings(BaseSettings):
@@ -67,8 +57,15 @@ class LogstashSettings(BaseSettings):
     LOGSTASH_PORT: int = 5044
 
 
+class SMTPSettings(BaseSettings):
+    SMTP_USER: str = "root@localhost"
+    SMTP_PASSWORD: str = ""
+    SMTP_HOST: str = "localhost"
+    SMTP_PORT: int = 25
+
+
 logstash_settings = LogstashSettings()
 redis_settings = RedisSettings()
 rabbit_settings = RabbitSettings()
 pg_settings = PostgreSettings()
-kafka_settings = KafkaSettings()
+smtp_settings = SMTPSettings()

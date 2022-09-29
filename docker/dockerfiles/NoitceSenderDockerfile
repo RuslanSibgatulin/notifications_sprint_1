@@ -1,0 +1,9 @@
+FROM python:3.9
+COPY requirements/notice_sender.txt /tmp/requirements/notice_sender.txt
+RUN pip install --no-cache-dir -r /tmp/requirements/notice_sender.txt
+
+WORKDIR /app
+
+COPY ./workers /app
+
+CMD ["python", "main.py"]

@@ -24,7 +24,7 @@ class NewUserHandler(TemplatesMixin):
         template: NoticeTemplate
     ):
         routing_key = self.get_routing_key(template)
-        queue_name = f"{template.notice_method}.send"
+        queue_name = f"{template.notice_method}.send-welcome"
         msg = {
             "context": context,
             "template": template.content}

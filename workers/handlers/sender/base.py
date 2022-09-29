@@ -3,19 +3,18 @@ from abc import ABC, abstractmethod
 
 class EmailSenderInterface(ABC):
     @abstractmethod
-    def connect(self) -> None:
+    async def connect(self) -> None:
         pass
 
     @abstractmethod
-    def send_email(
+    async def send(
             self,
-            send_from: str,
             send_to: str,
-            message: str,
+            subject: str,
             template: str
-    ) -> None:
+    ) -> bool:
         pass
 
     @abstractmethod
-    def disconnect(self) -> None:
+    async def disconnect(self) -> None:
         pass

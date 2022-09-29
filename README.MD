@@ -31,10 +31,8 @@
 
     make start
 
-## Документация сервиса доступна по ссылке
-- http://127.0.0.1:8000/api/openapi
-
 
 # Команда
 - [Ruslan Sibgatulin (lead)](https://github.com/RuslanSibgatulin)
+- [Maxim Speshilov](https://github.com/paaanic)
 - [Fedor Kuzminov](https://github.com/Riyce)
