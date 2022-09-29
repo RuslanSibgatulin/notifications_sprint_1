@@ -17,20 +17,15 @@
 ## Клонировать репозиторий
     git clone git@github.com:RuslanSibgatulin/notifications_sprint_1.git
 
-## Подготовить файл с переменными окружения и сохранить под именем `docker/envs/prod`:
+## Подготовка окружения
 
-    KAFKA_HOST=broker
-    KAFKA_PORT=29092
-
-    LOGSTASH_HOST=logstash
-    LOGSTASH_PORT=5044
+Подготовить файлы с переменными окружения по аналогии с файлами `docker/envs/*.example` и пересохранить в файлы `*.env`
 
 
 ## Запуск
 Выполнить в терминале:
 
     make start
-
 
 # Команда
 - [Ruslan Sibgatulin (lead)](https://github.com/RuslanSibgatulin)
