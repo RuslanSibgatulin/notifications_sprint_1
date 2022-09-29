@@ -1,11 +1,11 @@
 from datetime import datetime, timezone
 
-from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
-from proto import scheduler_pb2
 
 import models
+from proto import scheduler_pb2
 
 
 def serialize_schedule(

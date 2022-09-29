@@ -1,8 +1,9 @@
 import pika
 from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.jobstores.memory import MemoryJobStore
-from db import Database
 from dependency_injector import containers, providers
+
+from db import Database
 from deps.auth import FakeAuthService
 from queue_backend.rabbit import RabbitQueueBackend
 from services.notifications.events import EventsProvider

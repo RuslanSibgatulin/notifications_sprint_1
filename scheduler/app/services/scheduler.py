@@ -1,4 +1,5 @@
 from typing import Callable, Protocol
+
 from apscheduler.executors.base import BaseExecutor
 from apscheduler.jobstores.base import BaseJobStore
 from apscheduler.schedulers.background import BackgroundScheduler

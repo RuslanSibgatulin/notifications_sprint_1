@@ -5,9 +5,9 @@ from grpc_interceptor.exceptions import InvalidArgument, NotFound
 import models
 from containers import Container
 from proto import scheduler_pb2, scheduler_pb2_grpc
+from serializers import deserialize_schedule, serialize_schedule
 from services.notifications.base import BaseNotificationTask, NotificationTasksRegistry
 from services.scheduler import Scheduler
-from serializers import deserialize_schedule, serialize_schedule
 
 
 class NotificationsSchedulerService(scheduler_pb2_grpc.NotificationsSchedulerServicer):
