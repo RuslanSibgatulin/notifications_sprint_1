@@ -30,6 +30,8 @@ class Gateways(containers.DeclarativeContainer):
         Database,
         host=config.postgres_host,
         port=config.postgres_port,
+        user=config.postgres_user,
+        password=config.postgres_password,
         db_name=config.postgres_db_name,
     )
 

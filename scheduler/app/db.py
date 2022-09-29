@@ -7,16 +7,20 @@ from psycopg2.extensions import connection
 
 
 class Database:
-    def __init__(self, host: str, port: int, db_name: str) -> None:
-        self.host = host
-        self.port = port
-        self.db_name = db_name
+    def __init__(
+        self, host: str, port: int, user: str, password: str, db_name: str
+    ) -> None:
+        self.conn_settings = {
+            "host": host,
+            "port": port,
+            "user": user,
+            "password": password,
+            "database": db_name,
+        }
 
     @contextmanager
     def conn(self) -> Callable[..., AbstractContextManager[connection]]:
-        conn: connection = psycopg2.connect(
-            host=self.host, port=self.port, database=self.db_name
-        )
+        conn: connection = psycopg2.connect(**self.conn_settings)
         conn.cursor_factory = psycopg2.extras.DictCursor()
         try:
             yield conn
