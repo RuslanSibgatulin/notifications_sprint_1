@@ -1,0 +1,13 @@
+version: "3"
+services:
+  scheduler:
+    container_name: scheduler
+    build:
+      context: ..
+      dockerfile: docker/dockerfiles/SchedulerDockerfile
+    env_file: envs/Scheduler.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbit:
+        condition: service_healthy
