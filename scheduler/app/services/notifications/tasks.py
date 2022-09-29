@@ -19,12 +19,10 @@ class NotificationTask(BaseNotificationTask):
         self,
         name: str,
         description: str,
-        queue: BaseQueueBackend = Provide[Container.queue],
         templates_provider: TemplatesProvider = Provide[Container.templates],
     ) -> None:
         self.name = name
         self.description = description
-        self._queue = queue
         self._templates_provider = templates_provider
 
     def __call__(self) -> None:
@@ -38,11 +36,17 @@ class NotificationTask(BaseNotificationTask):
     def get_routing_key(self) -> str:
         return f"scheduled.{self.name}"
 
-    def publish(self, template: Template, context: dict[str, Any]) -> None:
+    @inject
+    def publish(
+        self,
+        template: Template,
+        context: dict[str, Any],
+        queue: BaseQueueBackend = Provide[Container.queue],
+    ) -> None:
         message = context | {"template": template.content}
         message_json = json.dumps(message).encode("utf-8")
         routing_key = self.get_routing_key()
-        self._queue.publish(routing_key, message_json)
+        queue.publish(routing_key, message_json)
 
 
 class RecommendContinueWatching(NotificationTask):
