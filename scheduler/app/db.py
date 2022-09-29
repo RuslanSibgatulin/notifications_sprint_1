@@ -21,7 +21,7 @@ class Database:
     @contextmanager
     def conn(self) -> Callable[..., AbstractContextManager[connection]]:
         conn: connection = psycopg2.connect(**self.conn_settings)
-        conn.cursor_factory = psycopg2.extras.DictCursor()
+        conn.cursor_factory = psycopg2.extras.DictCursor
         try:
             yield conn
         finally:
