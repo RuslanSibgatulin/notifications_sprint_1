@@ -1,0 +1,95 @@
+syntax = "proto3";
+
+package NotificationsScheduler;
+
+service NotificationsScheduler {
+    rpc ListNotifications (Empty) returns (NotificationsList);
+
+    rpc AddJob (AddJobRequest) returns (Job);
+
+    rpc GetJob (GetJobRequest) returns (Job);
+
+    rpc ListJobs (Empty) returns (JobList);
+
+    rpc RescheduleJob (RescheduleJobRequest) returns (Job);
+
+    rpc PauseJob (PauseJobRequest) returns (Empty);
+    
+    rpc ResumeJob (ResumeJobRequest) returns (Empty);
+}
+
+message Empty {
+
+}
+
+message NotificationsList {
+    repeated string notifications = 1;
+}
+
+message CronSchedule {
+    optional string year = 1;
+    optional string month = 2;
+    optional string day = 3;
+    optional string week = 4;
+    optional string day_of_week = 5;
+    optional string hour = 6;
+    optional string minute = 7;
+    optional string second = 8;
+}
+
+message DatetimeSchedule {
+    int64 timestamp = 1;
+}
+
+message IntervalSchedule {
+    optional int32 days = 1;
+    optional int32 hours = 2;
+    optional int32 minutes = 3;
+    optional int32 seconds = 4;
+}
+
+message Job {
+    string notification = 1;
+    string description = 2;
+    oneof schedule {
+        CronSchedule cron = 3;
+        DatetimeSchedule at = 4;
+        IntervalSchedule interval = 5;
+    }
+    int64 next_run_time = 6;
+}
+
+message JobList {
+    repeated Job jobs = 1;
+}
+
+message AddJobRequest {
+    string notification = 1;
+    string description = 2;
+    oneof schedule {
+        CronSchedule cron = 3;
+        DatetimeSchedule at = 4;
+        IntervalSchedule interval = 5;
+    }
+}
+
+message GetJobRequest {
+    string notification = 1;
+}
+
+message RescheduleJobRequest {
+    string notification = 1;
+    oneof schedule {
+        CronSchedule cron = 2;
+        DatetimeSchedule at = 3;
+        IntervalSchedule interval = 4;
+    }
+}
+
+message PauseJobRequest {
+    string notification = 1;
+}
+
+message ResumeJobRequest {
+    string notification = 1;
+}

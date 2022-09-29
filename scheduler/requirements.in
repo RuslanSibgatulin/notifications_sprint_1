@@ -1,0 +1,10 @@
+apscheduler
+dependency-injector
+faker
+grpcio
+grpc-interceptor
+grpcio-tools
+pika
+pydantic
+psycopg2-binary
+SQLAlchemy
