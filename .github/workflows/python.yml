@@ -34,13 +34,13 @@ jobs:
         run: |
           mypy event_handler/ --ignore-missing-imports --no-strict-optional --html-report reports/mypy_reports
           mypy workers/ --ignore-missing-imports --no-strict-optional --html-report reports/mypy_reports
-          mypy scheduler/ --ignore-missing-imports --no-strict-optional --html-report reports/mypy_reports
+          # mypy scheduler/ --ignore-missing-imports --no-strict-optional --html-report reports/mypy_reports
           
       - name: Run flake8
         run: |
           flake8 event_handler/ --ignore=WPS,B008,B902,C812 --show-source
           flake8 workers/ --ignore=WPS,B008,B902,C812 --show-source
-          flake8 scheduler/ --ignore=WPS,B008,B902,C812 --show-source
+          # flake8 scheduler/ --ignore=WPS,B008,B902,C812 --show-source
       
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.0
