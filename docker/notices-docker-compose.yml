@@ -12,6 +12,13 @@ services:
       - postgres
       - rabbit
 
+  auth:
+    container_name: auth
+    build:
+      context: ..
+      dockerfile: docker/dockerfiles/AuthDockerfile
+    env_file: envs/Auth.env
+
   scheduler:
     container_name: scheduler
     build:
