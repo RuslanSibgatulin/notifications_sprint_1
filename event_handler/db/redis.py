@@ -18,7 +18,7 @@ class RedisCache:
         value = await self.source.get(key)
         if value is None:
             return None
-        # else:
+
         return orjson.loads(value)
 
     async def set(self, key: str, value: Any) -> None:
