@@ -4,7 +4,7 @@ from apscheduler.jobstores.memory import MemoryJobStore
 from dependency_injector import containers, providers
 
 from db import Database
-from deps.auth import FakeAuthService
+from deps.auth import AuthService
 from queue_backend.rabbit import RabbitQueueBackend
 from services.notifications.events import EventsProvider
 from services.notifications.registry import MemoryTasksRegisty
@@ -16,7 +16,7 @@ class Gateways(containers.DeclarativeContainer):
 
     config = providers.Configuration()
 
-    auth = providers.Factory(FakeAuthService)
+    auth = providers.Factory(AuthService, host=config.auth_host, port=config.auth_port)
 
     rabbit_conn_params = providers.Factory(
         pika.ConnectionParameters, host=config.rabbit_host, port=config.rabbit_port
