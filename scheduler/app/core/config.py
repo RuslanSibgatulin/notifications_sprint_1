@@ -11,6 +11,9 @@ class AppSettings(BaseSettings):
 
 
 class GatewaysSettings(BaseSettings):
+    auth_host: str = "127.0.0.1"
+    auth_port: int = 50061
+
     rabbit_host: str = "127.0.0.1"
     rabbit_port: int = 5672
     rabbit_queue: str = "scheduled.email.send"
