@@ -68,4 +68,4 @@ class EmailSMTPSender(EmailSenderInterface):
             logger.debug("Sending result - %s", res)
             await self.disconnect()
 
-        return True if res == "OK" else False
+        return res == "OK"

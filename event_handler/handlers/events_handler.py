@@ -65,9 +65,9 @@ class EventsHandler:
         model = self.config.get(event.topic, {}).get("model", None)
         if model:
             return model.parse_obj(obj).dict()
-        else:
-            logger.info("No model for topic %s", event.topic)
-            return None
+        # else:
+        logger.info("No model for topic %s", event.topic)
+        return None
 
     def start(self):
         loop = asyncio.get_event_loop()
