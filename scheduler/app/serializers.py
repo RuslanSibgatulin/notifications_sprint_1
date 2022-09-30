@@ -44,9 +44,7 @@ def serialize_schedule(
 
 def deserialize_schedule(
     name: str,
-    schedule: scheduler_pb2.CronSchedule
-    | scheduler_pb2.DatetimeSchedule
-    | scheduler_pb2.IntervalSchedule,
+    schedule: scheduler_pb2.CronSchedule | scheduler_pb2.DatetimeSchedule | scheduler_pb2.IntervalSchedule,
 ) -> (models.CronSchedule | models.DatetimeSchedule | models.IntervalSchedule):
     match name:
         case "cron":
