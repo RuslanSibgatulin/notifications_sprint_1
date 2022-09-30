@@ -1,0 +1,40 @@
+version: "3"
+services:
+  eventshandler:
+    container_name: events-handler
+    build:
+      context: ..
+      dockerfile: docker/dockerfiles/EventsHandlerDockerfile
+    env_file: envs/EventsHandler.env
+    depends_on:
+      - broker
+      - redis
+      - postgres
+      - rabbit
+
+  auth:
+    container_name: auth
+    build:
+      context: ..
+      dockerfile: docker/dockerfiles/AuthDockerfile
+    env_file: envs/Auth.env
+
+  scheduler:
+    container_name: scheduler
+    build:
+      context: ..
+      dockerfile: docker/dockerfiles/SchedulerDockerfile
+    env_file: envs/Scheduler.env
+    depends_on:
+      - postgres
+      - rabbit
+
+  noticesender:
+    container_name: notice-sender
+    build:
+      context: ..
+      dockerfile: docker/dockerfiles/NoitceSenderDockerfile
+    env_file: envs/NoticeSender.env
+    depends_on:
+      - redis
+      - rabbit

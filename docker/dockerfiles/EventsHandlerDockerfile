@@ -1,0 +1,9 @@
+FROM python:3.9
+COPY requirements/event_handler.txt /tmp/requirements/event_handler.txt
+RUN pip install --no-cache-dir -r /tmp/requirements/event_handler.txt
+
+WORKDIR /app
+
+COPY ./event_handler /app
+
+CMD ["python", "main.py"]
