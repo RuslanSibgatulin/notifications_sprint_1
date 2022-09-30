@@ -6,6 +6,8 @@ import orjson
 from aio_pika import Channel, DeliveryMode, Message, connect_robust
 from aio_pika.pool import Pool
 
+from .backoff import aiobackoff
+
 logger = logging.getLogger(__name__)
 
 
@@ -19,6 +21,7 @@ class RabbitExchange:
         loop = asyncio.get_event_loop()
         self.channel_pool = Pool(self.get_channel, max_size=10, loop=loop)
 
+    @aiobackoff("Rabbit.connect", logger)
     async def get_connection(self):
         return await connect_robust(self.url)
 

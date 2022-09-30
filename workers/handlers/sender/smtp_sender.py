@@ -3,7 +3,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from aiosmtplib import SMTP
-from core.backoff import aiobackoff
+from db.backoff import aiobackoff
 
 from .base import EmailSenderInterface
 
