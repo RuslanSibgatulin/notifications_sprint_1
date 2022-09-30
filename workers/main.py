@@ -4,6 +4,8 @@ from enum import Enum, unique
 from typing import Callable
 
 import orjson
+
+from core.backoff import aiobackoff
 from core.logger import LOGGING
 from core.settings import rabbit_settings, redis_settings
 from db.rabbit_exchange import RabbitExchange
@@ -39,6 +41,7 @@ class NoticeWorker:
             10 * 60,  # expires in 10 minutes
         )
 
+    @aiobackoff("NoticeWorker", logger)
     async def start(self) -> None:
         async for msg in self.rabbit.consume(self.queue_name):
             if await self.get_message_state(msg.message_id) != MessageStates.InProgress.value:
@@ -60,6 +63,8 @@ if __name__ == "__main__":
         NoticeWorker("email.send-welcome", Mailer).start(),
         NoticeWorker("scheduled.email.send", Mailer).start()
     )
-    future = asyncio.gather(*tasks, return_exceptions=True)
-    ioloop.run_until_complete(future)
-    ioloop.close()
+    future = asyncio.gather(*tasks)
+    try:
+        ioloop.run_until_complete(future)
+    finally:
+        ioloop.close()

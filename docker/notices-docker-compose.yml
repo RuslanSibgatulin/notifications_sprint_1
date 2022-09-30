@@ -7,14 +7,10 @@ services:
       dockerfile: docker/dockerfiles/EventsHandlerDockerfile
     env_file: envs/EventsHandler.env
     depends_on:
-      broker:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-      rabbit:
-        condition: service_healthy
+      - broker
+      - redis
+      - postgres
+      - rabbit
 
   scheduler:
     container_name: scheduler
@@ -23,10 +19,8 @@ services:
       dockerfile: docker/dockerfiles/SchedulerDockerfile
     env_file: envs/Scheduler.env
     depends_on:
-      postgres:
-        condition: service_healthy
-      rabbit:
-        condition: service_healthy
+      - postgres
+      - rabbit
 
   noticesender:
     container_name: notice-sender
@@ -35,7 +29,5 @@ services:
       dockerfile: docker/dockerfiles/NoitceSenderDockerfile
     env_file: envs/NoticeSender.env
     depends_on:
-      redis:
-        condition: service_healthy
-      rabbit:
-        condition: service_healthy
+      - redis
+      - rabbit
