@@ -4,7 +4,6 @@ from enum import Enum, unique
 from typing import Callable
 
 import orjson
-
 from core.backoff import aiobackoff
 from core.logger import LOGGING
 from core.settings import rabbit_settings, redis_settings
