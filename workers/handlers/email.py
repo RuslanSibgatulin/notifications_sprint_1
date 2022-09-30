@@ -49,6 +49,7 @@ class Mailer:
         if resp:
             logger.info("Sending success")
             return True
-        else:
-            logger.warning("Sending failed")
-            return False
+
+        # else
+        logger.warning("Sending failed")
+        return False

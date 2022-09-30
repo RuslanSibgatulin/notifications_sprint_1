@@ -1,5 +1,4 @@
 import asyncio
-import logging
 import logging.config
 from enum import Enum, unique
 from typing import Callable
