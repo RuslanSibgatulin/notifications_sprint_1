@@ -1,25 +1,17 @@
-import asyncio
 import logging
 from typing import Any, Dict
 
-from core.settings import smtp_settings
 from handlers.render import TemplateRender
 
 from .models.models import EmailRabbitMessage
-from .sender.smtp_sender import EmailSMTPSender
+from .sender.base import SenderInterface
 
 logger = logging.getLogger(__name__)
 
 
-class Mailer(EmailSMTPSender, TemplateRender):
+class PushSender(SenderInterface, TemplateRender):
     def __init__(self) -> None:
-        super().__init__(
-            smtp_settings.SMTP_USER,
-            smtp_settings.SMTP_PASSWORD,
-            smtp_settings.SMTP_HOST,
-            smtp_settings.SMTP_PORT
-        )
-        self.method = "email"
+        self.method = "push"
 
     async def __call__(self, data: Dict[str, Any]) -> bool:
         msg = EmailRabbitMessage.parse_obj(data)
@@ -31,7 +23,6 @@ class Mailer(EmailSMTPSender, TemplateRender):
             "Notification",
             body
         )
-        await asyncio.sleep(1)
         if resp:
             logger.info("Sending success")
             return True

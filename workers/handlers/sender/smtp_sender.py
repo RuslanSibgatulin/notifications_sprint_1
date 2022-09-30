@@ -5,12 +5,12 @@ from email.mime.text import MIMEText
 from aiosmtplib import SMTP
 from db.backoff import aiobackoff
 
-from .base import EmailSenderInterface
+from .base import SenderInterface
 
 logger = logging.getLogger(__name__)
 
 
-class EmailSMTPSender(EmailSenderInterface):
+class EmailSMTPSender(SenderInterface):
     def __init__(
             self,
             user: str,

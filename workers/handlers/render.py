@@ -3,7 +3,7 @@ from typing import Dict
 from jinja2 import Environment
 
 
-class EmailRender:
+class TemplateRender:
     def __init__(self) -> None:
         self.env = Environment(enable_async=True)
 

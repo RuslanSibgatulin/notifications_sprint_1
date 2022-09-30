@@ -3,15 +3,10 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
-class NoticeMethod(UUIDMixin):
-
-    class Meta:
-        db_table = "notice_method"
-        verbose_name = _('Method')
-        verbose_name_plural = _('Methods')
-
-    def __str__(self):
-        return self.name
+class NoticeMethod(models.TextChoices):
+    EMAIL = 'email'
+    PUSH = 'push'
+    SMS = 'sms'
 
 
 class NoticeTemplate(UUIDMixin, TimeStampedMixin):
@@ -27,6 +22,8 @@ class NoticeTemplate(UUIDMixin, TimeStampedMixin):
 
 
 class NoticeTrigger(UUIDMixin):
+    """Модель будет содержать Kafka-топик - источник событий
+    """
 
     class Meta:
         db_table = "notice_trigger"
@@ -49,10 +46,9 @@ class Notice(UUIDMixin, TimeStampedMixin):
         on_delete=models.PROTECT,
         verbose_name=_('trigger')
     )
-    method = models.ForeignKey(
-        NoticeMethod,
-        verbose_name=_('method'),
-        on_delete=models.PROTECT
+    method = models.CharField(
+        _('method'), max_length=50,
+        choices=NoticeMethod.choices
     )
     enabled = models.BooleanField(_('enabled'))
 

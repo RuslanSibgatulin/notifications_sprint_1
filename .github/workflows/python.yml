@@ -63,8 +63,7 @@ jobs:
         token: ${{ secrets.TELEGRAM_TOKEN }}
         message: |
           Repository: ${{ github.repository }}
-          ${{ github.actor }} created commit:
-          Commit message: ${{ github.event.commits[0].message }}
+          Author: ${{ github.actor }}
           Tests result: ${{ needs.tests.result }}
-          
+          Commit message: ${{ github.event.commits[0].message }}          
           See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}

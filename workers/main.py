@@ -1,7 +1,7 @@
 import asyncio
 import logging.config
 from enum import Enum, unique
-from typing import Callable
+from typing import Callable, List
 
 import orjson
 from core.logger import LOGGING
@@ -9,6 +9,8 @@ from core.settings import rabbit_settings, redis_settings
 from db.rabbit_exchange import RabbitExchange
 from db.redis import RedisCache
 from handlers.email import Mailer
+from handlers.push import PushSender
+from handlers.sms import SmsSender
 
 logging.config.dictConfig(LOGGING)
 logger = logging.getLogger("Notice-Sender")
@@ -23,10 +25,10 @@ class MessageStates(Enum):
 
 
 class NoticeWorker:
-    def __init__(self, queue_name: str, handler: Callable) -> None:
+    def __init__(self, queue_name: str, handlers: List[Callable]) -> None:
         self.redis = RedisCache(redis_settings.uri)
         self.rabbit = RabbitExchange(rabbit_settings.uri, exchange="Notice")
-        self.handler = handler
+        self.handlers = handlers
         self.queue_name = queue_name
 
     async def get_message_state(self, message_id: str) -> MessageStates:
@@ -42,10 +44,9 @@ class NoticeWorker:
     async def start(self) -> None:
         async for msg in self.rabbit.consume(self.queue_name):
             if await self.get_message_state(msg.message_id) != MessageStates.InProgress.value:
-                logger.debug("Process message %s", msg.message_id)
                 await self.set_message_state(msg.message_id, MessageStates.InProgress)
-                resp = await self.handler()(orjson.loads(msg.body))
-                if resp:
+                res = await self.exec_handlers(msg)
+                if res:
                     await msg.ack()
                     await self.set_message_state(msg.message_id, MessageStates.Processed)
                     logger.info("%s - processing success", msg.message_id)
@@ -53,12 +54,23 @@ class NoticeWorker:
                     await self.set_message_state(msg.message_id, MessageStates.Error)
                     logger.warning("Queue message %s - processing failed", msg.message_id)
 
+    async def exec_handlers(self, msg) -> bool:
+        logger.debug("Process queue message %s", msg.message_id)
+        results = []
+        for handler in self.handlers:
+            resp = await handler()(orjson.loads(msg.body))
+            results.append(resp)
+
+        return any(results)
+
 
 if __name__ == "__main__":
     ioloop = asyncio.get_event_loop()
     tasks = (
-        NoticeWorker("email.send-welcome", Mailer).start(),
-        NoticeWorker("scheduled.email.send", Mailer).start()
+        NoticeWorker("email.send-welcome", [Mailer]).start(),
+        NoticeWorker("scheduled.email.send", [Mailer]).start(),
+        NoticeWorker("sms.send-confirm", [SmsSender]).start(),
+        NoticeWorker("push.send-notice", [PushSender]).start(),
     )
     future = asyncio.gather(*tasks)
     try:

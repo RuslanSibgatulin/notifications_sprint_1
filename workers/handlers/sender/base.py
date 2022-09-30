@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class EmailSenderInterface(ABC):
+class SenderInterface(ABC):
     @abstractmethod
     async def connect(self) -> None:
         pass
